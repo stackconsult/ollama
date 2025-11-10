@@ -194,7 +194,7 @@ func (g *GitMCP) executeClone(ctx context.Context, args map[string]any) (*GitOpe
 
 func (g *GitMCP) executeStatus(ctx context.Context, args map[string]any) (*GitOperationResult, error) {
 	path := g.getRepoPath(args)
-	
+
 	cmd := exec.CommandContext(ctx, "git", "-C", path, "status")
 	output, err := cmd.CombinedOutput()
 
@@ -214,9 +214,9 @@ func (g *GitMCP) executeStatus(ctx context.Context, args map[string]any) (*GitOp
 
 func (g *GitMCP) executeLog(ctx context.Context, args map[string]any) (*GitOperationResult, error) {
 	path := g.getRepoPath(args)
-	
+
 	cmdArgs := []string{"-C", path, "log"}
-	
+
 	// Handle options
 	if options, ok := args["options"].(map[string]any); ok {
 		if limit, ok := options["limit"].(float64); ok && limit > 0 {
@@ -246,9 +246,9 @@ func (g *GitMCP) executeLog(ctx context.Context, args map[string]any) (*GitOpera
 
 func (g *GitMCP) executeDiff(ctx context.Context, args map[string]any) (*GitOperationResult, error) {
 	path := g.getRepoPath(args)
-	
+
 	cmdArgs := []string{"-C", path, "diff"}
-	
+
 	// Handle options
 	if options, ok := args["options"].(map[string]any); ok {
 		if cached, ok := options["cached"].(bool); ok && cached {
@@ -274,9 +274,9 @@ func (g *GitMCP) executeDiff(ctx context.Context, args map[string]any) (*GitOper
 
 func (g *GitMCP) executeAdd(ctx context.Context, args map[string]any) (*GitOperationResult, error) {
 	path := g.getRepoPath(args)
-	
+
 	cmdArgs := []string{"-C", path, "add"}
-	
+
 	// Handle files parameter
 	if filesRaw, ok := args["files"]; ok {
 		switch files := filesRaw.(type) {
@@ -317,7 +317,7 @@ func (g *GitMCP) executeAdd(ctx context.Context, args map[string]any) (*GitOpera
 
 func (g *GitMCP) executeCommit(ctx context.Context, args map[string]any) (*GitOperationResult, error) {
 	path := g.getRepoPath(args)
-	
+
 	message, ok := args["message"].(string)
 	if !ok || message == "" {
 		return nil, fmt.Errorf("commit message is required")
@@ -342,7 +342,7 @@ func (g *GitMCP) executeCommit(ctx context.Context, args map[string]any) (*GitOp
 
 func (g *GitMCP) executePush(ctx context.Context, args map[string]any) (*GitOperationResult, error) {
 	path := g.getRepoPath(args)
-	
+
 	cmd := exec.CommandContext(ctx, "git", "-C", path, "push")
 	output, err := cmd.CombinedOutput()
 
@@ -362,7 +362,7 @@ func (g *GitMCP) executePush(ctx context.Context, args map[string]any) (*GitOper
 
 func (g *GitMCP) executePull(ctx context.Context, args map[string]any) (*GitOperationResult, error) {
 	path := g.getRepoPath(args)
-	
+
 	cmd := exec.CommandContext(ctx, "git", "-C", path, "pull")
 	output, err := cmd.CombinedOutput()
 
@@ -382,9 +382,9 @@ func (g *GitMCP) executePull(ctx context.Context, args map[string]any) (*GitOper
 
 func (g *GitMCP) executeBranch(ctx context.Context, args map[string]any) (*GitOperationResult, error) {
 	path := g.getRepoPath(args)
-	
+
 	cmdArgs := []string{"-C", path, "branch"}
-	
+
 	if branch, ok := args["branch"].(string); ok && branch != "" {
 		cmdArgs = append(cmdArgs, branch)
 	}
@@ -408,7 +408,7 @@ func (g *GitMCP) executeBranch(ctx context.Context, args map[string]any) (*GitOp
 
 func (g *GitMCP) executeCheckout(ctx context.Context, args map[string]any) (*GitOperationResult, error) {
 	path := g.getRepoPath(args)
-	
+
 	branch, ok := args["branch"].(string)
 	if !ok || branch == "" {
 		return nil, fmt.Errorf("branch name is required for checkout operation")
@@ -433,7 +433,7 @@ func (g *GitMCP) executeCheckout(ctx context.Context, args map[string]any) (*Git
 
 func (g *GitMCP) executeInit(ctx context.Context, args map[string]any) (*GitOperationResult, error) {
 	path := g.getRepoPath(args)
-	
+
 	// Ensure the directory exists
 	if err := os.MkdirAll(path, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create directory: %w", err)
