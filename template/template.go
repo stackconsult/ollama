@@ -460,15 +460,35 @@ func deleteNode(n parse.Node, fn func(parse.Node) bool) parse.Node {
 			t.Nodes = nodes
 			return t
 		case *parse.IfNode:
-			t.BranchNode = *(walk(&t.BranchNode).(*parse.BranchNode))
+			if result := walk(&t.BranchNode); result != nil {
+				t.BranchNode = *(result.(*parse.BranchNode))
+			} else {
+				return nil
+			}
 		case *parse.WithNode:
-			t.BranchNode = *(walk(&t.BranchNode).(*parse.BranchNode))
+			if result := walk(&t.BranchNode); result != nil {
+				t.BranchNode = *(result.(*parse.BranchNode))
+			} else {
+				return nil
+			}
 		case *parse.RangeNode:
-			t.BranchNode = *(walk(&t.BranchNode).(*parse.BranchNode))
+			if result := walk(&t.BranchNode); result != nil {
+				t.BranchNode = *(result.(*parse.BranchNode))
+			} else {
+				return nil
+			}
 		case *parse.BranchNode:
-			t.List = walk(t.List).(*parse.ListNode)
+			if listResult := walk(t.List); listResult != nil {
+				t.List = listResult.(*parse.ListNode)
+			} else {
+				return nil
+			}
 			if t.ElseList != nil {
-				t.ElseList = walk(t.ElseList).(*parse.ListNode)
+				if elseResult := walk(t.ElseList); elseResult != nil {
+					t.ElseList = elseResult.(*parse.ListNode)
+				} else {
+					return nil
+				}
 			}
 		case *parse.ActionNode:
 			n := walk(t.Pipe)
