@@ -10,6 +10,7 @@ import (
 	"slices"
 	"strings"
 	"testing"
+	"text/template/parse"
 
 	"github.com/google/go-cmp/cmp"
 
@@ -543,6 +544,75 @@ func TestCollate(t *testing.T) {
 				if collated[i].ToolName != tt.expected[i].ToolName {
 					t.Errorf("message %d tool name mismatch: got %q, want %q", i, collated[i].ToolName, tt.expected[i].ToolName)
 				}
+			}
+		})
+	}
+}
+
+func TestDeleteNodeBranchProtection(t *testing.T) {
+	// Test that deleteNode handles branches correctly when the entire branch content is deleted
+	// This tests the fix for protecting against nil pointer panics in branch nodes
+	cases := []struct {
+		name     string
+		template string
+		deleteAt string // field name to delete
+	}{
+		{
+			name:     "if with Response only",
+			template: "{{ if .Cond }}{{ .Response }}{{ end }}",
+			deleteAt: "Response",
+		},
+		{
+			name:     "if-else with Response in if branch",
+			template: "{{ if .Cond }}{{ .Response }}{{ else }}other{{ end }}",
+			deleteAt: "Response",
+		},
+		{
+			name:     "if-else with Response in both branches",
+			template: "{{ if .Cond }}{{ .Response }}{{ else }}{{ .Response }}{{ end }}",
+			deleteAt: "Response",
+		},
+		{
+			name:     "range with Response",
+			template: "{{ range .Items }}{{ .Response }}{{ end }}",
+			deleteAt: "Response",
+		},
+		{
+			name:     "with with Response",
+			template: "{{ with .Value }}{{ .Response }}{{ end }}",
+			deleteAt: "Response",
+		},
+		{
+			name:     "nested if with Response",
+			template: "{{ if .Cond1 }}{{ if .Cond2 }}{{ .Response }}{{ end }}{{ end }}",
+			deleteAt: "Response",
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			tmpl, err := Parse(tt.template)
+			if err != nil {
+				t.Fatalf("Parse failed: %v", err)
+			}
+
+			// This should not panic - the fix protects against nil pointer dereferences
+			result := deleteNode(tmpl.Tree.Root.Copy(), func(n parse.Node) bool {
+				if field, ok := n.(*parse.FieldNode); ok {
+					for _, ident := range field.Ident {
+						if ident == tt.deleteAt {
+							return true
+						}
+					}
+				}
+				return false
+			})
+
+			// The result should be a valid node (either a modified tree or nil if everything was deleted)
+			if result != nil {
+				t.Logf("Result tree: %v", result)
+			} else {
+				t.Log("Result tree is nil (entire content was deleted)")
 			}
 		})
 	}
