@@ -820,6 +820,16 @@ func (s *Server) chat(w http.ResponseWriter, r *http.Request) error {
 				registry.Register(&tools.WebFetch{})
 			}
 		}
+
+		// Register git_mcp tool for models that support function calling
+		// Git operations are useful for repository management and development tasks
+		if supportsGitTools(req.Model) {
+			workingDir := s.WorkingDir
+			if workingDir == "" {
+				workingDir, _ = os.Getwd()
+			}
+			registry.Register(tools.NewGitMCP(workingDir))
+		}
 	}
 
 	var thinkingTimeStart *time.Time = nil
@@ -1720,6 +1730,21 @@ func supportsBrowserTools(model string) bool {
 func supportsWebSearchTools(model string) bool {
 	model = strings.ToLower(model)
 	prefixes := []string{"qwen3", "deepseek-v3"}
+	for _, p := range prefixes {
+		if strings.HasPrefix(model, p) {
+			return true
+		}
+	}
+	return false
+}
+
+// Git tools provide repository management capabilities (e.g., "git_mcp" for clone, status, log, diff, add, commit, push, pull, branch operations).
+// Most models that support function calling can use git tools.
+func supportsGitTools(model string) bool {
+	model = strings.ToLower(model)
+	// Git tools are available for models that support browser or web search tools
+	// as they typically have good function calling capabilities
+	prefixes := []string{"gpt-oss", "qwen3", "deepseek-v3", "deepseek-r1", "llama3", "gemma3", "qwq"}
 	for _, p := range prefixes {
 		if strings.HasPrefix(model, p) {
 			return true
