@@ -175,16 +175,6 @@ ollama rm llama3.2
 ollama cp llama3.2 my-model
 ```
 
-### Tag a model
-
-Create a new tag/reference for an existing model:
-
-```shell
-ollama tag llama3.2 my-model
-```
-
-> Note: Tagging a model creates a new reference to the same underlying model data, preserving all artifacts and functionality. This is useful for versioning models before making changes or creating meaningful aliases.
-
 ### Multiline input
 
 For multiline input, you can wrap text with `"""`:

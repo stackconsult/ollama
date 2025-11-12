@@ -1090,13 +1090,7 @@ func CopyHandler(cmd *cobra.Command, args []string) error {
 	if err := client.Copy(cmd.Context(), &req); err != nil {
 		return err
 	}
-
-	// Determine the action verb based on the command used
-	action := "copied"
-	if cmd.CalledAs() == "tag" {
-		action = "tagged"
-	}
-	fmt.Printf("%s '%s' as '%s'\n", action, args[0], args[1])
+	fmt.Printf("copied '%s' to '%s'\n", args[0], args[1])
 	return nil
 }
 
@@ -1826,7 +1820,6 @@ func NewCLI() *cobra.Command {
 	}
 	copyCmd := &cobra.Command{
 		Use:     "cp SOURCE DESTINATION",
-		Aliases: []string{"tag"},
 		Short:   "Copy a model",
 		Args:    cobra.ExactArgs(2),
 		PreRunE: checkServerHeartbeat,
