@@ -1090,7 +1090,7 @@ func CopyHandler(cmd *cobra.Command, args []string) error {
 	if err := client.Copy(cmd.Context(), &req); err != nil {
 		return err
 	}
-	
+
 	// Determine the action verb based on the command used
 	action := "copied"
 	if cmd.CalledAs() == "tag" {

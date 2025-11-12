@@ -386,29 +386,29 @@ func TestCopyHandler(t *testing.T) {
 			RunE:    CopyHandler,
 		}
 		rootCmd.AddCommand(cpCmd)
-		
+
 		// Set args and execute to properly set CalledAs
 		rootCmd.SetArgs([]string{"cp", "source-model", "dest-model"})
 		rootCmd.SetContext(t.Context())
-		
+
 		// Capture stdout
 		old := os.Stdout
 		r, w, _ := os.Pipe()
 		os.Stdout = w
-		
+
 		err := rootCmd.Execute()
-		
+
 		w.Close()
 		os.Stdout = old
-		
+
 		var buf bytes.Buffer
 		io.Copy(&buf, r)
 		output := buf.String()
-		
+
 		if err != nil {
 			t.Fatalf("CopyHandler failed: %v", err)
 		}
-		
+
 		if !strings.Contains(output, "copied") {
 			t.Errorf("Expected output to contain 'copied', got: %s", output)
 		}
@@ -423,29 +423,29 @@ func TestCopyHandler(t *testing.T) {
 			RunE:    CopyHandler,
 		}
 		rootCmd.AddCommand(cpCmd)
-		
+
 		// Set args to use the tag alias and execute
 		rootCmd.SetArgs([]string{"tag", "source-model", "dest-model"})
 		rootCmd.SetContext(t.Context())
-		
+
 		// Capture stdout
 		old := os.Stdout
 		r, w, _ := os.Pipe()
 		os.Stdout = w
-		
+
 		err := rootCmd.Execute()
-		
+
 		w.Close()
 		os.Stdout = old
-		
+
 		var buf bytes.Buffer
 		io.Copy(&buf, r)
 		output := buf.String()
-		
+
 		if err != nil {
 			t.Fatalf("CopyHandler failed: %v", err)
 		}
-		
+
 		if !strings.Contains(output, "tagged") {
 			t.Errorf("Expected output to contain 'tagged', got: %s", output)
 		}
@@ -454,7 +454,7 @@ func TestCopyHandler(t *testing.T) {
 	t.Run("error case", func(t *testing.T) {
 		cmd := &cobra.Command{Use: "cp"}
 		cmd.SetContext(t.Context())
-		
+
 		err := CopyHandler(cmd, []string{"nonexistent-model", "dest-model"})
 		if err == nil {
 			t.Fatal("CopyHandler should have failed for nonexistent model")
