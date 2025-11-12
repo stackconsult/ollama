@@ -49,6 +49,27 @@ ollama pull gemma3
 ollama rm gemma3
 ```
 
+### Copy a model
+
+```
+ollama cp gemma3 my-gemma3
+```
+
+### Tag a model
+
+Create a new tag/reference for an existing model:
+
+```
+ollama tag gemma3 my-gemma3-backup
+```
+
+This is useful for:
+- Creating backups before making changes
+- Versioning models with meaningful names
+- Creating aliases for easier access
+
+> Note: Tagging creates a new reference to the same underlying model data, so it's storage-efficient.
+
 ### List models
 
 ```
