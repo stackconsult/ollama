@@ -41,14 +41,22 @@ jobs:
         # Prefix the list here with "+" to use these queries and those in the config file.
 
     # Install dependencies for the TypeScript app
-    - name: Install dependencies
+    - name: Install app/ui/app dependencies
       working-directory: ./app/ui/app
       run: npm ci
 
     # Build the TypeScript application
-    - name: Build TypeScript app
+    - name: Build app/ui/app
       working-directory: ./app/ui/app
       run: npm run build
+
+    # Install dependencies for macapp
+    - name: Install macapp dependencies
+      working-directory: ./macapp
+      run: npm ci
+
+    # Note: macapp build is skipped as it requires Electron-specific environment
+    # CodeQL can analyze the TypeScript source files without a full build
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
